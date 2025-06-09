@@ -8,6 +8,7 @@ import { ThemeToggle } from "../components/ui/theme-toggle";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { FiDownload } from "react-icons/fi";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -58,6 +59,12 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
+            <Button asChild variant="ghost" size="sm" className="gap-2">
+              <a href="/resume.pdf" download="LancePantaleon_Resume.pdf">
+                <FiDownload className="w-4 h-4" />
+                Resume
+              </a>
+            </Button>
           </div>
 
           {/* Mobile menu button */}

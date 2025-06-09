@@ -11,6 +11,7 @@ import {
   SiMongodb, SiMysql, SiPostgresql,
   SiTailwindcss, SiGithubactions, SiDocker, SiNginx
 } from "react-icons/si";
+import {FiDownload} from "react-icons/fi";
 
 const MotionCard = motion(Card);
 
@@ -232,26 +233,29 @@ export default function Home() {
           </TextReveal>
         </div>
 
-        <TextReveal delay={0.8}>
-          <div className="flex flex-col sm:flex-row gap-4 mt-8">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button asChild size="lg" className="bg-foreground hover:bg-foreground/90 text-background px-8 py-3 text-lg">
-                <Link href="/projects">View My Work</Link>
-              </Button>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button asChild variant="outline" size="lg" className="border-2 px-8 py-3 text-lg hover:bg-muted/50">
-                <Link href="/contact">Contact Me</Link>
-              </Button>
-            </motion.div>
-          </div>
-        </TextReveal>
+      <TextReveal delay={0.8}>
+        <div className="flex flex-col sm:flex-row gap-4 mt-8">
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button asChild size="lg" className="bg-foreground hover:bg-foreground/90 text-background px-8 py-3 text-lg">
+              <Link href="/projects">View My Work</Link>
+            </Button>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button asChild variant="outline" size="lg" className="border-2 px-8 py-3 text-lg hover:bg-muted/50">
+              <Link href="/contact">Contact Me</Link>
+            </Button>
+          </motion.div>
+          {/* Updated Resume Button with Icon */}
+          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <Button asChild variant="ghost" size="lg" className="px-8 py-3 text-lg gap-2">
+              <a href="/resume.pdf" download="LancePantaleon_Resume.pdf">
+                <FiDownload className="w-5 h-5" />
+                Resume
+              </a>
+            </Button>
+          </motion.div>
+        </div>
+      </TextReveal>
 
         {/* Scroll indicator */}
         <motion.div
