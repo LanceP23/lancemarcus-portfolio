@@ -52,7 +52,7 @@ const projects: Project[] = [
     title: "Queen of Angel Monastery Website",
     description: "A dual-website project with a landing page and admin dashboard, both built using the MERN stack.",
     tags: ["MongoDB", "Express", "React", "Node.js"],
-    imageUrl: "/Queen of Angels Pic.png",
+    imageUrl: "/QueenOfAngelsPic.png",
     projectUrl: "https://queenofangelsmonastery.org",
     year: "2025"
   },
