@@ -1,103 +1,342 @@
-import Image from "next/image";
+"use client";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Card } from "@/components/ui/card";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { 
+  SiHtml5, SiCss3, SiJavascript, SiReact, SiNextdotjs, SiTypescript,
+  SiNodedotjs, SiExpress, SiNestjs, SiStrapi, SiLaravel,
+  SiMongodb, SiMysql, SiPostgresql,
+  SiTailwindcss, SiGithubactions, SiDocker, SiNginx
+} from "react-icons/si";
+
+const MotionCard = motion(Card);
+
+// Grid background component
+const GridBackground = () => {
+  return (
+    <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:6rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]">
+    </div>
+  );
+};
+
+// Floating orbs background
+const FloatingOrbs = () => {
+  const [orbData, setOrbData] = useState<Array<{
+    width: number;
+    height: number;
+    left: string;
+    top: string;
+    x: number;
+    y: number;
+    duration: number;
+  }>>([]);
+
+  useEffect(() => {
+    // Generate consistent random values on client side only
+    const orbs = [...Array(6)].map(() => ({
+      width: Math.random() * 400 + 200,
+      height: Math.random() * 400 + 200,
+      left: Math.random() * 100 + "%",
+      top: Math.random() * 100 + "%",
+      x: Math.random() * 100 - 50,
+      y: Math.random() * 100 - 50,
+      duration: Math.random() * 10 + 10,
+    }));
+    setOrbData(orbs);
+  }, []);
+
+  if (orbData.length === 0) return null;
+
+  return (
+    <div className="absolute inset-0 -z-5">
+      {orbData.map((orb, i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full bg-gradient-to-r from-gray-400/10 to-gray-600/10 blur-xl"
+          style={{
+            width: orb.width,
+            height: orb.height,
+            left: orb.left,
+            top: orb.top,
+          }}
+          animate={{
+            x: [0, orb.x],
+            y: [0, orb.y],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{
+            duration: orb.duration,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// Text reveal component
+const TextReveal = ({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay, ease: "easeOut" }}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+// Glowing text component
+const GlowText = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => {
+  return (
+    <motion.span
+      className={`relative inline-block ${className}`}
+      initial={{ textShadow: "0 0 0px rgba(0, 0, 0, 0)" }}
+      animate={{ 
+        textShadow: [
+          "0 0 0px rgba(0, 0, 0, 0)",
+          "0 0 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(64, 64, 64, 0.2)",
+          "0 0 20px rgba(0, 0, 0, 0.3), 0 0 40px rgba(64, 64, 64, 0.2)"
+        ]
+      }}
+      transition={{ duration: 2, delay: 0.5 }}
+    >
+      {children}
+    </motion.span>
+  );
+};
+
+const skillCategories = [
+  {
+    name: "Frontend",
+    skills: [
+      { name: "HTML", icon: SiHtml5, color: "text-orange-500" },
+      { name: "CSS", icon: SiCss3, color: "text-blue-500" },
+      { name: "JavaScript", icon: SiJavascript, color: "text-yellow-400" },
+      { name: "React", icon: SiReact, color: "text-blue-400" },
+      { name: "Next.js", icon: SiNextdotjs, color: "text-black dark:text-white" },
+      { name: "TypeScript", icon: SiTypescript, color: "text-blue-600" }
+    ]
+  },
+  {
+    name: "Backend",
+    skills: [
+      { name: "Node.js", icon: SiNodedotjs, color: "text-green-600" },
+      { name: "Express", icon: SiExpress, color: "text-gray-400" },
+      { name: "NestJS", icon: SiNestjs, color: "text-red-500" },
+      { name: "Strapi", icon: SiStrapi, color: "text-blue-500" },
+      { name: "Laravel", icon: SiLaravel, color: "text-red-600" }
+    ]
+  },
+  {
+    name: "Database & DevOps",
+    skills: [
+      { name: "MongoDB", icon: SiMongodb, color: "text-green-500" },
+      { name: "MySQL", icon: SiMysql, color: "text-blue-600" },
+      { name: "PostgreSQL", icon: SiPostgresql, color: "text-blue-700" },
+      { name: "Tailwind CSS", icon: SiTailwindcss, color: "text-cyan-400" },
+      { name: "GitHub Actions", icon: SiGithubactions, color: "text-gray-700 dark:text-gray-300" },
+      { name: "Docker", icon: SiDocker, color: "text-blue-400" },
+      { name: "Nginx", icon: SiNginx, color: "text-green-500" }
+    ]
+  }
+];
+
+const SkillIcon = ({ skill, index }: { skill: (typeof skillCategories)[0]['skills'][0], index: number }) => {
+  const IconComponent = skill.icon;
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+      whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+      viewport={{ once: true }}
+      transition={{
+        delay: index * 0.1,
+        duration: 0.6,
+        type: "spring",
+        stiffness: 100
+      }}
+      whileHover={{ 
+        y: -10, 
+        scale: 1.1,
+        transition: { duration: 0.2 }
+      }}
+      className="flex flex-col items-center group"
+    >
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className={`flex flex-col items-center ${skill.color} transition-all duration-300`}>
+            <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 grid place-items-center relative">
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <IconComponent className="w-3/4 h-3/4 drop-shadow-lg" />
+            </div>
+            <span className="text-xs mt-2 text-muted-foreground group-hover:text-foreground transition-colors duration-300">
+              {skill.name}
+            </span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{skill.name}</p>
+        </TooltipContent>
+      </Tooltip>
+    </motion.div>
+  );
+};
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"]
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
+  return (
+    <div ref={containerRef} className="min-h-screen bg-gradient-to-b from-background via-background to-muted/10 relative overflow-hidden">
+      <GridBackground />
+      <FloatingOrbs />
+      
+      {/* Hero Section */}
+      <motion.section 
+        className="flex flex-col items-center justify-center min-h-[100vh] px-4 text-center space-y-8 relative z-10"
+        style={{ y, opacity }}
+      >
+        <div className="space-y-6 max-w-4xl">
+          <TextReveal delay={0.2}>
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold leading-tight">
+              <span className="block mb-2">Hi, I'm</span>
+              <GlowText className="text-foreground">
+                Lance
+              </GlowText>
+            </h1>
+          </TextReveal>
+
+          <TextReveal delay={0.4}>
+            <h2 className="text-2xl md:text-4xl lg:text-5xl font-semibold">
+              <GlowText>Full Stack Developer</GlowText>
+            </h2>
+          </TextReveal>
+
+          <TextReveal delay={0.6}>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              I build <span className="font-semibold text-foreground">exceptional digital experiences</span> with modern web technologies, 
+              creating scalable solutions that make a difference.
+            </p>
+          </TextReveal>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <TextReveal delay={0.8}>
+          <div className="flex flex-col sm:flex-row gap-4 mt-8">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button asChild size="lg" className="bg-foreground hover:bg-foreground/90 text-background px-8 py-3 text-lg">
+                <Link href="/projects">View My Work</Link>
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button asChild variant="outline" size="lg" className="border-2 px-8 py-3 text-lg hover:bg-muted/50">
+                <Link href="/contact">Contact Me</Link>
+              </Button>
+            </motion.div>
+          </div>
+        </TextReveal>
+
+        {/* Scroll indicator */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          <div className="w-6 h-10 border-2 border-muted-foreground rounded-full flex justify-center">
+            <div className="w-1 h-3 bg-muted-foreground rounded-full mt-2"></div>
+          </div>
+        </motion.div>
+      </motion.section>
+
+      {/* Skills Section */}
+      <section className="py-20 px-4 max-w-7xl mx-auto space-y-20 relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="text-center space-y-4"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          <h2 className="text-4xl md:text-5xl font-bold">
+            My <span className="text-foreground font-extrabold">Tech Stack</span>
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Technologies I use to bring ideas to life
+          </p>
+        </motion.div>
+        
+        {skillCategories.map((category, categoryIndex) => (
+          <motion.div 
+            key={category.name} 
+            className="space-y-10"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: categoryIndex * 0.2 }}
+          >
+            <h3 className="text-2xl md:text-3xl font-bold text-center">
+              <span className="text-foreground font-extrabold">
+                {category.name}
+              </span>
+            </h3>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 gap-8 place-items-center">
+              {category.skills.map((skill, index) => (
+                <SkillIcon key={skill.name} skill={skill} index={index} />
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-20 px-4 max-w-4xl mx-auto relative z-10">
+        <MotionCard 
+          className="p-12 bg-muted/50 dark:bg-muted/20 text-center border-2 border-border backdrop-blur-sm"
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          whileHover={{ scale: 1.02 }}
         >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <div className="space-y-6">
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Ready to <span className="text-foreground font-extrabold">work together</span>?
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              I'm currently available for <span className="font-semibold text-foreground">freelance work</span> and 
+              <span className="font-semibold text-foreground"> full-time positions</span>.
+            </p>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button asChild size="lg" className="mt-6 bg-foreground hover:bg-foreground/90 text-background px-8 py-3 text-lg">
+                <Link href="/contact">Get in Touch</Link>
+              </Button>
+            </motion.div>
+          </div>
+        </MotionCard>
+      </section>
+
+      {/* Bottom spacing */}
+      <div className="h-20"></div>
     </div>
   );
 }
